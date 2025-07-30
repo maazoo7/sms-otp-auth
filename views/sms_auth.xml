@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- list View -->
+    <record id="view_sms_auth_tree" model="ir.ui.view">
+        <field name="name">auth.sms.list</field>
+        <field name="model">auth.sms</field>
+        <field name="arch" type="xml">
+            <list string="SMS Authentication">
+                <field name="name"/>
+                <field name="phone_number"/>
+                <field name="user_id"/>
+                <field name="is_verified"/>
+                <field name="expiry_time"/>
+                <field name="attempts"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_sms_auth_form" model="ir.ui.view">
+        <field name="name">auth.sms.form</field>
+        <field name="model">auth.sms</field>
+        <field name="arch" type="xml">
+            <form string="SMS Authentication">
+                <header>
+<!--                    <button name="verify_code" string="Verify Code" type="object" -->
+<!--                            class="btn-primary" invisible="is_verified == True"/>-->
+<!--                    <field name="is_verified" widget="statusbar" statusbar_visible="0,1"/>-->
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="SMS Auth Reference"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="phone_number"/>
+                            <field name="user_id"/>
+                            <field name="verification_code"
+                                   readonly="is_verified == True"/>
+                        </group>
+                        <group>
+                            <field name="is_verified"/>
+                            <field name="expiry_time"/>
+                            <field name="attempts"/>
+                            <field name="max_attempts"/>
+                        </group>
+                    </group>
+                    <group string="System Information">
+                        <group>
+                            <field name="create_date"/>
+                            <field name="write_date"/>
+                        </group>
+                        <group>
+                            <field name="create_uid"/>
+                            <field name="write_uid"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_sms_auth_search" model="ir.ui.view">
+        <field name="name">auth.sms.search</field>
+        <field name="model">auth.sms</field>
+        <field name="arch" type="xml">
+            <search string="SMS Authentication">
+                <field name="name"/>
+                <field name="phone_number"/>
+                <field name="user_id"/>
+                <separator/>
+                <filter name="verified" string="Verified" domain="[('is_verified', '=', True)]"/>
+                <filter name="not_verified" string="Not Verified" domain="[('is_verified', '=', False)]"/>
+                <filter name="expired" string="Expired" domain="[('expiry_time', '&lt;', context_today())]"/>
+                <separator/>
+                <filter name="today" string="Today" domain="[('create_date', '&gt;=', context_today())]"/>
+                <filter name="this_week" string="This Week" domain="[('create_date', '&gt;=', (context_today() - datetime.timedelta(days=7)))]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_user" string="User" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_by_verified" string="Verification Status" context="{'group_by': 'is_verified'}"/>
+                    <filter name="group_by_date" string="Creation Date" context="{'group_by': 'create_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_sms_auth" model="ir.actions.act_window">
+        <field name="name">SMS Authentication</field>
+        <field name="res_model">auth.sms</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_sms_auth_tree"/>
+        <field name="search_view_id" ref="view_sms_auth_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create SMS authentication records
+            </p>
+            <p>
+                Manage SMS-based authentication for users. You can track verification codes,
+                expiry times, and verification attempts.
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <!-- Main Menu (Technical Menu) -->
+    <menuitem id="menu_sms_auth_technical_root"
+              name="SMS Authentication"
+              parent="base.menu_administration"
+              sequence="100"/>
+
+    <!-- Sub Menu -->
+    <menuitem id="menu_sms_auth_records"
+              name="SMS Auth Records"
+              parent="menu_sms_auth_technical_root"
+              action="action_sms_auth"
+              sequence="10"/>
+
+    <!-- Alternative: If you want it under Settings > Technical > Database Structure -->
+    <menuitem id="menu_sms_auth_technical_db"
+              name="SMS Authentication"
+              parent="base.menu_custom"
+              action="action_sms_auth"
+              sequence="50"/>
+
+    <!-- Security Rules -->
+<!--    <record id="sms_auth_rule_admin" model="ir.rule">-->
+<!--        <field name="name">SMS Auth: Admin Access</field>-->
+<!--        <field name="model_id" ref="model_auth_sms"/>-->
+<!--        <field name="domain_force">[(1, '=', 1)]</field>-->
+<!--        <field name="groups" eval="[(4, ref('base.group_system'))]"/>-->
+<!--        <field name="perm_read" eval="True"/>-->
+<!--        <field name="perm_write" eval="True"/>-->
+<!--        <field name="perm_create" eval="True"/>-->
+<!--        <field name="perm_unlink" eval="True"/>-->
+<!--    </record>-->
+
+<!--    <record id="sms_auth_rule_user" model="ir.rule">-->
+<!--        <field name="name">SMS Auth: User Own Records</field>-->
+<!--        <field name="model_id" ref="model_auth_sms"/>-->
+<!--        <field name="domain_force">[('user_id', '=', user.id)]</field>-->
+<!--        <field name="groups" eval="[(4, ref('base.group_user'))]"/>-->
+<!--        <field name="perm_read" eval="True"/>-->
+<!--        <field name="perm_write" eval="False"/>-->
+<!--        <field name="perm_create" eval="False"/>-->
+<!--        <field name="perm_unlink" eval="False"/>-->
+<!--    </record>-->
+
+</odoo>

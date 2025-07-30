@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SMS Phone Entry Template -->
+    <template id="sms_login_template" name="SMS Login - Phone Entry">
+        <t t-call="web.login_layout">
+            <form class="oe_login_form" role="form" method="post" action="/web/sms_login">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="mb-3">
+                    <h3 class="text-center mb-4">SMS Login</h3>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone Number</label>
+                    <input type="tel" name="phone" id="phone" class="form-control"
+                           placeholder="Enter your registered phone number"
+                           required="required"
+                           t-att-value="request.params.get('phone', '')"/>
+                    <small class="form-text text-muted">
+                        Enter the phone number registered with your account
+                    </small>
+                </div>
+
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <t t-esc="error"/>
+                    </div>
+                </t>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fa fa-mobile-phone me-2"></i>Send OTP
+                    </button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <hr/>
+                    <p class="mb-2">Or login with</p>
+                    <a href="/web/login" class="btn btn-outline-secondary">
+                        <i class="fa fa-envelope me-2"></i>Email &amp; Password
+                    </a>
+                </div>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        Don't have an account? Contact your administrator.
+                    </small>
+                </div>
+            </form>
+        </t>
+    </template>
+
+    <!-- SMS OTP Verification Template -->
+    <template id="sms_otp_template" name="SMS Login - OTP Verification">
+        <t t-call="web.login_layout">
+            <form class="oe_login_form" role="form" method="post" action="/web/verify_otp">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <input type="hidden" name="phone" t-att-value="phone"/>
+                <input type="hidden" name="sms_auth_id" t-att-value="sms_auth_id"/>
+
+                <div class="mb-3">
+                    <h3 class="text-center mb-4">Verify OTP</h3>
+                </div>
+
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="fa fa-mobile-phone fa-3x text-primary"></i>
+                    </div>
+                    <p class="mb-2">
+                        We've sent a verification code to
+                    </p>
+                    <p class="fw-bold text-primary">
+                        <t t-esc="masked_phone"/>
+                    </p>
+                    <small class="text-muted">
+                        Enter the 4-digit code below
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="otp" class="form-label">Verification Code</label>
+                    <input type="text" name="otp" id="otp" class="form-control form-control-lg text-center"
+                           placeholder="0000"
+                           maxlength="4"
+                           pattern="[0-9]{4}"
+                           style="font-size: 1.5rem; letter-spacing: 0.5rem;"
+                           required="required"
+                           autocomplete="off"/>
+                </div>
+
+                <t t-if="error">
+                    <div class="alert alert-danger" role="alert">
+                        <t t-esc="error"/>
+                    </div>
+                </t>
+
+                <t t-if="success">
+                    <div class="alert alert-success" role="alert">
+                        <t t-esc="success"/>
+                    </div>
+                </t>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fa fa-check me-2"></i>Verify &amp; Login
+                    </button>
+                </div>
+
+                <div class="text-center mt-3">
+                    <p class="mb-2">Didn't receive the code?</p>
+                    <form method="post" action="/web/resend_otp" style="display: inline;">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <input type="hidden" name="phone" t-att-value="phone"/>
+                        <input type="hidden" name="sms_auth_id" t-att-value="sms_auth_id"/>
+                        <button type="submit" class="btn btn-link p-0">
+                            <i class="fa fa-refresh me-1"></i>Resend OTP
+                        </button>
+                    </form>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="/web/sms_login" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left me-2"></i>Back to Phone Entry
+                    </a>
+                </div>
+
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Code expires in 2 minutes
+                    </small>
+                </div>
+            </form>
+
+            <!-- Auto-focus and formatting script -->
+<!--            <script type="text/javascript">-->
+<!--                document.addEventListener('DOMContentLoaded', function() {-->
+<!--                var otpInput = document.getElementById('otp');-->
+<!--                if (otpInput) {-->
+<!--                otpInput.focus();-->
+
+<!--                // Format OTP input-->
+<!--                otpInput.addEventListener('input', function(e) {-->
+<!--                var value = e.target.value.replace(/\D/g, '');-->
+<!--                if (value.length > 6) {-->
+<!--                value = value.slice(0, 6);-->
+<!--                }-->
+<!--                e.target.value = value;-->
+<!--                });-->
+
+<!--                // Auto-submit when 6 digits entered-->
+<!--                otpInput.addEventListener('input', function(e) {-->
+<!--                if (e.target.value.length === 6) {-->
+<!--                // Optional: auto-submit after short delay-->
+<!--                setTimeout(function() {-->
+<!--                if (otpInput.value.length === 6) {-->
+<!--                otpInput.closest('form').submit();-->
+<!--                }-->
+<!--                }, 500);-->
+<!--                }-->
+<!--                });-->
+<!--                }-->
+<!--                });-->
+<!--            </script>-->
+        </t>
+    </template>
+
+    <!-- Enhanced Login Template with SMS Option -->
+    <template id="enhanced_web_login" name="Enhanced Login" inherit_id="web.login">
+        <xpath expr="//form[1]" position="inside">
+            <div class="text-center mt-4">
+                <hr/>
+                <p class="mb-3">Quick Login Options</p>
+                <a href="/web/sms_login" class="btn btn-success btn-lg w-100">
+                    <i class="fa fa-mobile-phone me-2"/>Login with SMS
+                </a>
+                <small class="form-text text-muted mt-2">
+                    Login using your registered phone number
+                </small>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Add SMS login link to login page -->
+    <template id="login_sms_link" name="SMS Login Link" inherit_id="web.login">
+        <xpath expr="//button[@class='btn btn-link btn-sm'][1]" position="after">
+            <div class="text-center mt-3">
+                <a href="?sms_login=1" class="btn btn-link">
+                    <i class="fa fa-mobile-phone me-1"></i>Login with Phone Number
+                </a>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>
