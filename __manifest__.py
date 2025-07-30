@@ -20,7 +20,6 @@
     'license': 'LGPL-3',
     'price': 50.00,
     'currency': 'USD',
-
     'data': [
         'security/ir.model.access.csv',
         'views/sms_auth.xml',
